@@ -15,7 +15,16 @@ namespace CheddarChase
         public Dictionary<string, Texture2D> Assets { get; set; }
         public Texture2D Background { get; set; }
         public Vector2 BackgroundPosition { get; set; } = new Vector2(0, 0);
-        public int Levens { get; set; }
+        public int cheeseAmount { get; set; }
+        public int lives { get; set; }
+        private Texture2D mouse;
+        private Vector2 mousePosition = Vector2.Zero;
+        private int mouseMovement = 5;
+        private Texture2D cat;
+        private Vector2 catPosition = new Vector2(500, 500);
+        private int catMovement = 1;
+        private bool ActiveGame = true;
+        private bool canTakeLife = true;   
 
         private AbstractState CurrentState;
 
@@ -25,8 +34,8 @@ namespace CheddarChase
             Graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
-            Levens = 0;
-
+            cheeseAmount = 0;
+            lives = 3;
         }
 
         public void ChangeState(AbstractState newState)
@@ -54,6 +63,8 @@ namespace CheddarChase
             SpriteBatch = new SpriteBatch(GraphicsDevice);
             Assets = new Dictionary<string, Texture2D>();
             Background = Content.Load<Texture2D>("background");
+            mouse = Content.Load<Texture2D>("muis");
+            cat = Content.Load<Texture2D>("kat");
             Font = Content.Load<SpriteFont>("GameFont");
         }
 
@@ -66,6 +77,65 @@ namespace CheddarChase
 
             // TODO: Add your update logic here
 
+            if (Keyboard.GetState().IsKeyDown(Keys.Up))
+            {
+                if (mousePosition.Y - mouseMovement >= 0)
+                    mousePosition.Y -= mouseMovement;
+            }
+            else if (Keyboard.GetState().IsKeyDown(Keys.Down))
+            {
+                if (mousePosition.Y + mouseMovement + mouse.Height <= Background.Height)
+                    mousePosition.Y += mouseMovement;
+            }
+
+            if (Keyboard.GetState().IsKeyDown(Keys.Left))
+            {
+                if (mousePosition.X - mouseMovement >= 0)
+                    mousePosition.X -= mouseMovement;
+            }
+            else if (Keyboard.GetState().IsKeyDown(Keys.Right))
+            {
+                if (mousePosition.X + mouseMovement + mouse.Width <= Background.Width)
+                    mousePosition.X += mouseMovement;
+            }
+            if (lives < 0)
+            {
+                ActiveGame = false;
+            }
+
+
+            // CHATGPT ----------------------------------------- Maak Cat rectangle kleiner, dichter bij de kat
+
+            // Calculate direction vector from cat to mouse
+
+            Vector2 direction = mousePosition - catPosition;
+
+            // Only move if the cat is not already at the mouse
+            if (direction.Length() > 1f)
+            {
+                direction.Normalize(); // Make the vector's length 1
+                catPosition += direction * catMovement; // Move cat toward mouse
+            }
+
+            // CHATGPT -----------------------------------------
+
+            var mouseRectangle = new Rectangle((int)mousePosition.X, (int)mousePosition.Y, mouse.Width, mouse.Height);
+            var catRectangle = new Rectangle((int)catPosition.X, (int)catPosition.Y, cat.Width, cat.Height);
+
+            if (canTakeLife)
+            {
+                if (catRectangle.Intersects(mouseRectangle))
+                {
+                    lives--;
+                    // canTakeLife = false;
+                    // bekijk if() stateùent eronder 
+                }
+            }
+            if (!canTakeLife)
+            {
+                // hier mag de kat geen levens verliezen voor een paar seconden ofzo...
+                //soort van countdownTimer?? en daarna terug zetten naar true
+            }
             base.Update(gameTime);
         }
 
@@ -74,10 +144,22 @@ namespace CheddarChase
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             // TODO: Add your drawing code here
-            SpriteBatch.Begin();
-            SpriteBatch.Draw(Background, BackgroundPosition, Color.White);
-            SpriteBatch.DrawString(Font, "Aantal kaasjes: " + Levens, new Vector2(10, 10), Color.White);
-            SpriteBatch.End();
+            if (ActiveGame)
+            {
+                SpriteBatch.Begin();
+                SpriteBatch.Draw(Background, BackgroundPosition, Color.White);
+                SpriteBatch.Draw(mouse, new Rectangle((int)mousePosition.X, (int)mousePosition.Y, mouse.Width, mouse.Height), Color.White);
+                SpriteBatch.Draw(cat, new Rectangle((int)catPosition.X, (int)catPosition.Y, cat.Width, cat.Height), Color.White);
+                SpriteBatch.DrawString(Font, "Kaasjes: " + cheeseAmount, new Vector2(10, 10), Color.White);
+                SpriteBatch.DrawString(Font, "Levens: " + lives, new Vector2(10, 50), Color.White);
+                SpriteBatch.End();
+            }
+            else
+            {
+                SpriteBatch.Begin();
+                SpriteBatch.DrawString(Font, "Game Over", new Vector2(400, 300), Color.White);
+                SpriteBatch.End();
+            }
 
             base.Draw(gameTime);
         }
