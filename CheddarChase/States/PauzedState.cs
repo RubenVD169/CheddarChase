@@ -14,13 +14,17 @@ namespace CheddarChase.States {
             originState = playingState;
         }
 
-        public override void Draw(GameTime gameTime) {
-            originState.Draw(gameTime);
-           
+        public override void Update(GameTime gameTime) {
+            if (Keyboard.GetState().IsKeyDown(Keys.P)) {
+                game.ChangeState(originState);
+            }
         }
 
-        public override void Update(GameTime gameTime) {
-            
+        public override void Draw(GameTime gameTime) {
+            originState.Draw(gameTime);
+            game.SpriteBatch.Begin();
+            game.SpriteBatch.DrawString(game.Font, "Game Paused", new Vector2(400, 200), Color.Yellow);
+            game.SpriteBatch.End();
         }
     }
 }

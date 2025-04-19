@@ -8,17 +8,18 @@ using Microsoft.Xna.Framework;
 
 namespace CheddarChase.States {
     public class StartScreenState : AbstractState {
-        public StartScreenState(Game1 game) : base(game) {
-        }
-
-        public override void Draw(GameTime gameTime) {
-            
-        }
+        public StartScreenState(Game1 game) : base(game) { }
 
         public override void Update(GameTime gameTime) {
             if (Keyboard.GetState().IsKeyDown(Keys.Enter)) {
                 game.ChangeState(new PlayingState(game));
             }
+        }
+
+        public override void Draw(GameTime gameTime) {
+            game.SpriteBatch.Begin();
+            game.SpriteBatch.DrawString(game.Font, "Press ENTER to Start", new Vector2(350, 300), Color.White);
+            game.SpriteBatch.End();
         }
     }
 }
