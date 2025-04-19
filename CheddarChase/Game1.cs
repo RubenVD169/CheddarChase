@@ -4,10 +4,8 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
-namespace CheddarChase
-{
-    public class Game1 : Game
-    {
+namespace CheddarChase {
+    public class Game1 : Game {
         public GraphicsDeviceManager Graphics { get; set; }
         public SpriteBatch SpriteBatch { get; set; }
 
@@ -24,13 +22,16 @@ namespace CheddarChase
         private Vector2 catPosition = new Vector2(500, 500);
         private int catMovement = 1;
         private bool ActiveGame = true;
-        private bool canTakeLife = true;   
+        private bool canTakeLife = true;
+        private double collisionCooldown = 2.0; // seconden
+        private double cooldownTimer = 0;
+        private Texture2D cheese;
+        private Vector2 CheesePosition= new Vector2(10, 15);
 
         private AbstractState CurrentState;
 
 
-        public Game1()
-        {
+        public Game1() {
             Graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
@@ -38,13 +39,11 @@ namespace CheddarChase
             lives = 3;
         }
 
-        public void ChangeState(AbstractState newState)
-        {
+        public void ChangeState(AbstractState newState) {
             CurrentState = newState;
         }
 
-        protected override void Initialize()
-        {
+        protected override void Initialize() {
             // TODO: Add your initialization logic here
             const int width = 1080;
             const int height = 720;
@@ -58,18 +57,17 @@ namespace CheddarChase
             base.Initialize();
         }
 
-        protected override void LoadContent()
-        {
+        protected override void LoadContent() {
             SpriteBatch = new SpriteBatch(GraphicsDevice);
             Assets = new Dictionary<string, Texture2D>();
             Background = Content.Load<Texture2D>("background");
             mouse = Content.Load<Texture2D>("muis");
             cat = Content.Load<Texture2D>("kat");
+            cheese = Content.Load<Texture2D>("kaas");
             Font = Content.Load<SpriteFont>("GameFont");
         }
 
-        protected override void Update(GameTime gameTime)
-        {
+        protected override void Update(GameTime gameTime) {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
@@ -77,85 +75,72 @@ namespace CheddarChase
 
             // TODO: Add your update logic here
 
-            if (Keyboard.GetState().IsKeyDown(Keys.Up))
-            {
+            if (Keyboard.GetState().IsKeyDown(Keys.Up)) {
                 if (mousePosition.Y - mouseMovement >= 0)
                     mousePosition.Y -= mouseMovement;
             }
-            else if (Keyboard.GetState().IsKeyDown(Keys.Down))
-            {
+            else if (Keyboard.GetState().IsKeyDown(Keys.Down)) {
                 if (mousePosition.Y + mouseMovement + mouse.Height <= Background.Height)
                     mousePosition.Y += mouseMovement;
             }
 
-            if (Keyboard.GetState().IsKeyDown(Keys.Left))
-            {
+            if (Keyboard.GetState().IsKeyDown(Keys.Left)) {
                 if (mousePosition.X - mouseMovement >= 0)
                     mousePosition.X -= mouseMovement;
             }
-            else if (Keyboard.GetState().IsKeyDown(Keys.Right))
-            {
+            else if (Keyboard.GetState().IsKeyDown(Keys.Right)) {
                 if (mousePosition.X + mouseMovement + mouse.Width <= Background.Width)
                     mousePosition.X += mouseMovement;
             }
-            if (lives < 0)
-            {
+            if (lives < 1) {
                 ActiveGame = false;
             }
-
-
-            // CHATGPT ----------------------------------------- Maak Cat rectangle kleiner, dichter bij de kat
 
             // Calculate direction vector from cat to mouse
 
             Vector2 direction = mousePosition - catPosition;
 
             // Only move if the cat is not already at the mouse
-            if (direction.Length() > 1f)
-            {
+            if (direction.Length() > 1f) {
                 direction.Normalize(); // Make the vector's length 1
                 catPosition += direction * catMovement; // Move cat toward mouse
             }
 
-            // CHATGPT -----------------------------------------
+            Rectangle mouseCollisionRectangle = new Rectangle((int)mousePosition.X, (int)mousePosition.Y, mouse.Width, mouse.Height);
+            Rectangle catCollisionRectangle = new Rectangle((int)catPosition.X, (int)catPosition.Y, cat.Width, cat.Height);
 
-            var mouseRectangle = new Rectangle((int)mousePosition.X, (int)mousePosition.Y, mouse.Width, mouse.Height);
-            var catRectangle = new Rectangle((int)catPosition.X, (int)catPosition.Y, cat.Width, cat.Height);
-
-            if (canTakeLife)
-            {
-                if (catRectangle.Intersects(mouseRectangle))
-                {
+            // Collision check
+            if (canTakeLife) {
+                if (catCollisionRectangle.Intersects(mouseCollisionRectangle)) {
                     lives--;
-                    // canTakeLife = false;
-                    // bekijk if() stateùent eronder 
+                    canTakeLife = false;
+                    cooldownTimer = collisionCooldown; // start cooldown
                 }
             }
-            if (!canTakeLife)
-            {
-                // hier mag de kat geen levens verliezen voor een paar seconden ofzo...
-                //soort van countdownTimer?? en daarna terug zetten naar true
+            else {
+                // Aftellen tot cooldown voorbij is
+                cooldownTimer -= gameTime.ElapsedGameTime.TotalSeconds;
+                if (cooldownTimer <= 0) {
+                    canTakeLife = true;
+                }
             }
             base.Update(gameTime);
         }
 
-        protected override void Draw(GameTime gameTime)
-        {
+        protected override void Draw(GameTime gameTime) {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             // TODO: Add your drawing code here
-            if (ActiveGame)
-            {
+            if (ActiveGame) {
                 SpriteBatch.Begin();
                 SpriteBatch.Draw(Background, BackgroundPosition, Color.White);
                 SpriteBatch.Draw(mouse, new Rectangle((int)mousePosition.X, (int)mousePosition.Y, mouse.Width, mouse.Height), Color.White);
                 SpriteBatch.Draw(cat, new Rectangle((int)catPosition.X, (int)catPosition.Y, cat.Width, cat.Height), Color.White);
-                SpriteBatch.DrawString(Font, "Kaasjes: " + cheeseAmount, new Vector2(10, 10), Color.White);
+                SpriteBatch.Draw(cheese, new Rectangle((int)CheesePosition.X, (int)CheesePosition.Y, 40, 40), Color.White);
                 SpriteBatch.DrawString(Font, "Levens: " + lives, new Vector2(10, 50), Color.White);
                 SpriteBatch.End();
             }
-            else
-            {
+            else {
                 SpriteBatch.Begin();
                 SpriteBatch.DrawString(Font, "Game Over", new Vector2(400, 300), Color.White);
                 SpriteBatch.End();
