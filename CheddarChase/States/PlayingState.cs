@@ -136,8 +136,13 @@ namespace CheddarChase.States {
                 }
             }
 
-            if (mouseLives < 1 || catLives < 1) {
+            if (mouseLives < 1) {
                 game.ChangeState(new GameOverState(game));
+               
+            }
+            if (catLives < 1) {
+                game.ChangeState(new WinState(game, gameTime.TotalGameTime.TotalSeconds));
+                
             }
         }
 

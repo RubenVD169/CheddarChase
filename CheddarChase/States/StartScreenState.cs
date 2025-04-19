@@ -13,6 +13,7 @@ namespace CheddarChase.States {
         public override void Update(GameTime gameTime) {
             if (Keyboard.GetState().IsKeyDown(Keys.Enter)) {
                 game.ChangeState(new PlayingState(game));
+                gameTime.TotalGameTime = TimeSpan.Zero;
             }
         }
 

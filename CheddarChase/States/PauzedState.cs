@@ -15,7 +15,7 @@ namespace CheddarChase.States {
         }
 
         public override void Update(GameTime gameTime) {
-            if (Keyboard.GetState().IsKeyDown(Keys.P)) {
+            if (Keyboard.GetState().IsKeyDown(Keys.Enter)) {
                 game.ChangeState(originState);
             }
         }
@@ -24,6 +24,7 @@ namespace CheddarChase.States {
             originState.Draw(gameTime);
             game.SpriteBatch.Begin();
             game.SpriteBatch.DrawString(game.Font, "Game Paused", new Vector2(400, 200), Color.Yellow);
+            game.SpriteBatch.DrawString(game.Font, "Press Enter to continue", new Vector2(400, 250), Color.Yellow);
             game.SpriteBatch.End();
         }
     }
