@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Runtime.CompilerServices;
 
 namespace CheddarChase {
     public class Game1 : Game {
@@ -21,7 +22,7 @@ namespace CheddarChase {
         private int mouseMovement = 5;
         private Texture2D cat;
         private Vector2 catPosition = new Vector2(500, 500);
-        private int catMovement = 1;
+        private float catMovement = 1f;
         private bool ActiveGame = true;
         private bool canTakeLife = true;
         private double collisionCooldown = 2.0; // seconden
@@ -36,6 +37,15 @@ namespace CheddarChase {
         private Vector2 catLife = new Vector2(700, 60);
         private Texture2D redHeart;
         private Texture2D grayHeart;
+        private bool nextLevelText = false;
+        private int currentLevel = 1;
+        private double levelTimer = 0;
+        private SpriteEffects mouseFlip = SpriteEffects.None;
+        private SpriteEffects catFlip = SpriteEffects.None;
+        private bool isCatHurt = false;
+        private bool isMouseHurt = false;
+        private double hurtDuration = 0.2; // seconds the cat turns red
+        private double hurtTimer = 0;
 
 
         private AbstractState CurrentState;
@@ -96,13 +106,17 @@ namespace CheddarChase {
                     mousePosition.Y += mouseMovement;
             }
 
-            if (Keyboard.GetState().IsKeyDown(Keys.Left)) {
+            if (Keyboard.GetState().IsKeyDown(Keys.Left))
+            {
                 if (mousePosition.X - mouseMovement >= 0)
                     mousePosition.X -= mouseMovement;
+                mouseFlip = SpriteEffects.FlipHorizontally;
             }
-            else if (Keyboard.GetState().IsKeyDown(Keys.Right)) {
+            else if (Keyboard.GetState().IsKeyDown(Keys.Right))
+            {
                 if (mousePosition.X + mouseMovement + mouse.Width <= Background.Width)
                     mousePosition.X += mouseMovement;
+                mouseFlip = SpriteEffects.None;
             }
             if (mouseLives < 1) {
                 ActiveGame = false;
@@ -117,16 +131,27 @@ namespace CheddarChase {
                 direction.Normalize(); // Make the vector's length 1
                 catPosition += direction * catMovement; // Move cat toward mouse
             }
+            if (Math.Abs(direction.X) > 0.1f)
+            {
+                catFlip = direction.X > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally;
+            }
 
             Rectangle mouseCollisionRectangle = new Rectangle((int)mousePosition.X, (int)mousePosition.Y, mouse.Width, mouse.Height);
             Rectangle catCollisionRectangle = new Rectangle((int)catPosition.X, (int)catPosition.Y, cat.Width, cat.Height);
 
             // Collision check
-            if (canTakeLife) {
-                if (catCollisionRectangle.Intersects(mouseCollisionRectangle)) {
+            if (canTakeLife)
+            {
+                if (catCollisionRectangle.Intersects(mouseCollisionRectangle))
+                {
                     mouseLives--;
+
+                    // Trigger the red flash for mouse
+                    isMouseHurt = true;
+                    hurtTimer = hurtDuration;
+
                     canTakeLife = false;
-                    cooldownTimer = collisionCooldown; // start cooldown
+                    cooldownTimer = collisionCooldown;
                 }
             }
             else {
@@ -152,6 +177,52 @@ namespace CheddarChase {
                     break; // Exit the loop after removing the cheese
                 }
             }
+            if (cheeseAmount == 5)
+            {
+                cheeseAmount = 0;
+                nextLevelText = true;
+                currentLevel++;
+                catLives--;
+
+                // Trigger the red flash
+                isCatHurt = true;
+                hurtTimer = hurtDuration;
+
+                catMovement += 0.3f;
+                levelTimer = 0;
+            }
+
+            // Update de timer altijd als de tekst actief is
+            if (nextLevelText)
+            {
+                levelTimer += gameTime.ElapsedGameTime.TotalSeconds;
+                if (levelTimer > 1) // Na 2 seconden verbergen
+                {
+                    nextLevelText = false;
+                }
+            }
+            if (isCatHurt)
+            {
+                hurtTimer -= gameTime.ElapsedGameTime.TotalSeconds;
+                if (hurtTimer <= 0)
+                {
+                    isCatHurt = false;
+                }
+            }
+            if (isMouseHurt)
+            {
+                hurtTimer -= gameTime.ElapsedGameTime.TotalSeconds;
+                if (hurtTimer <= 0)
+                {
+                    isMouseHurt = false;
+                }
+            }
+            if (catLives < 1)
+            {
+                ActiveGame = false;
+            }
+
+
             base.Update(gameTime);
         }
 
@@ -162,8 +233,11 @@ namespace CheddarChase {
             if (ActiveGame) {
                 SpriteBatch.Begin();
                 SpriteBatch.Draw(Background, BackgroundPosition, Color.White);
-                SpriteBatch.Draw(mouse, new Rectangle((int)mousePosition.X, (int)mousePosition.Y, mouse.Width, mouse.Height), Color.White);
-                SpriteBatch.Draw(cat, new Rectangle((int)catPosition.X, (int)catPosition.Y, cat.Width, cat.Height), Color.White);
+                Color mouseColor = isMouseHurt ? Color.Red : Color.White;
+                SpriteBatch.Draw(mouse, new Rectangle((int)mousePosition.X, (int)mousePosition.Y, mouse.Width, mouse.Height), null, mouseColor, 0f, Vector2.Zero, mouseFlip, 0f);
+                Color catColor = isCatHurt ? Color.Red : Color.White;
+                SpriteBatch.Draw(cat, new Rectangle((int)catPosition.X, (int)catPosition.Y, cat.Width, cat.Height), null, catColor, 0f, Vector2.Zero, catFlip, 0f);
+
                 // Draw the cheese count
                 cheeseCount = new Vector2(10, 10);
                 for (int i = 0; i < 5; i++) {
@@ -192,8 +266,12 @@ namespace CheddarChase {
                     Vector2 position = cheesePositions[i];
                     SpriteBatch.Draw(yellowCheese, new Rectangle((int)position.X, (int)position.Y, 40, 40), Color.White);
                 }
+                if (nextLevelText)
+                {
+                    SpriteBatch.DrawString(Font, $"Level {currentLevel}", new Vector2(450, 300), Color.White);
+                }
                 SpriteBatch.End();
-            }
+            }     
             else {
                 SpriteBatch.Begin();
                 SpriteBatch.DrawString(Font, "Game Over", new Vector2(400, 300), Color.White);
