@@ -151,6 +151,18 @@ namespace CheddarChase
                 cheesePositions.Add(newCheese);
                 lastSpawnedCheese = gameTime.TotalGameTime;
             }
+            for (int i = 0; i < cheesePositions.Count; i++)
+            {
+                Vector2 position = cheesePositions[i];
+                Rectangle cheeseCollisionRectangle = new Rectangle((int)position.X, (int)position.Y, cheese.Width, cheese.Height);
+                if (mouseCollisionRectangle.Intersects(cheeseCollisionRectangle))
+                {
+                    cheesePositions.RemoveAt(i);
+                    cheeseAmount++;
+                    cheeseCount = new Vector2(cheeseCount.X, cheeseCount.Y);
+                    break; // Exit the loop after removing the cheese
+                }
+            }
             base.Update(gameTime);
         }
 
