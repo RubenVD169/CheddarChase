@@ -23,8 +23,8 @@ namespace CheddarChase.States {
         public override void Draw(GameTime gameTime) {
             originState.Draw(gameTime);
             game.SpriteBatch.Begin();
-            game.SpriteBatch.DrawString(game.Font, "Game Paused", new Vector2(400, 200), Color.Yellow);
-            game.SpriteBatch.DrawString(game.Font, "Press Enter to continue", new Vector2(400, 250), Color.Yellow);
+            game.SpriteBatch.DrawString(game.Font, "Game Paused", new Vector2(400, 280), Color.White);
+            game.SpriteBatch.DrawString(game.Font, "Press Enter to continue", new Vector2(325, 350), Color.White);
             game.SpriteBatch.End();
         }
     }

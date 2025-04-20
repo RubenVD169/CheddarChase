@@ -20,7 +20,7 @@ namespace CheddarChase.States {
 
         private int cheeseAmount = 0;
         private int mouseLives = 3;
-        private int catLives = 9;
+        private int catLives = 1;
 
         private Texture2D redHeart;
         private Texture2D grayHeart;

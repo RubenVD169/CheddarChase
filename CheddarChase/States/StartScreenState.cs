@@ -19,6 +19,7 @@ namespace CheddarChase.States {
 
         public override void Draw(GameTime gameTime) {
             game.SpriteBatch.Begin();
+            game.SpriteBatch.Draw(game.Assets["backgroundStart"], Vector2.Zero, Color.White);
             game.SpriteBatch.DrawString(game.Font, "Press ENTER to Start", new Vector2(350, 300), Color.White);
             game.SpriteBatch.End();
         }

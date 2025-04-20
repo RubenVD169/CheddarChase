@@ -35,6 +35,9 @@ namespace CheddarChase {
             SpriteBatch = new SpriteBatch(GraphicsDevice);
             Assets = new Dictionary<string, Texture2D> {
                 ["background"] = Content.Load<Texture2D>("background"),
+                ["backgroundStart"] = Content.Load<Texture2D>("backgroundStart"),
+                ["backgroundGameOver"] = Content.Load<Texture2D>("backgroundGameOver"),
+                ["backgroundWin"] = Content.Load<Texture2D>("backgroundWin"),
                 ["muis"] = Content.Load<Texture2D>("muis"),
                 ["kat"] = Content.Load<Texture2D>("kat"),
                 ["kaas"] = Content.Load<Texture2D>("kaas"),
