@@ -14,7 +14,7 @@ namespace CheddarChase.States {
         }
 
         private int CalculateScore(double seconds) {
-            // Simple formula: the faster the better
+            // Simpele formule waar de score wordt berekent op basis van de tijd: hoe sneller je wint doet, hoe hoger de score.
             return Math.Max(100000 - (int)(seconds * 100), 0);
         }
 
