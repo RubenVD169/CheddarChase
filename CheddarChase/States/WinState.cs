@@ -33,7 +33,7 @@ namespace CheddarChase.States {
             game.SpriteBatch.DrawString(game.Font, "YOU WIN!", new Vector2(450, 250), Color.Yellow);
             game.SpriteBatch.DrawString(game.Font, $"Score: {score}", new Vector2(425, 300), Color.White);
             game.SpriteBatch.DrawString(game.Font, $"Time: {playTimeInSeconds:F2} seconds", new Vector2(370, 350), Color.White);
-            game.SpriteBatch.DrawString(game.Font, "Press Enter to return to Start", new Vector2(300, 400), Color.White);
+            game.SpriteBatch.DrawString(game.Font, "Press ENTER to return to Start", new Vector2(300, 400), Color.White);
             game.SpriteBatch.End();
         }
     }
