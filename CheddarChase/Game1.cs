@@ -49,16 +49,16 @@ namespace CheddarChase {
 
             // Laad alle afbeeldingen in een dictionary voor eenvoudig gebruik
             Assets = new Dictionary<string, Texture2D> {
-                ["background"] = Content.Load<Texture2D>("background"), // Achtergrond tijdens het spel
-                ["backgroundStart"] = Content.Load<Texture2D>("backgroundStart"), // Achtergrond van het startscherm
-                ["backgroundGameOver"] = Content.Load<Texture2D>("backgroundGameOver"), // Achtergrond van het Game Over-scherm
-                ["backgroundWin"] = Content.Load<Texture2D>("backgroundWin"), // Achtergrond van het Win-scherm
-                ["muis"] = Content.Load<Texture2D>("muis"), // Afbeelding van de muis
-                ["kat"] = Content.Load<Texture2D>("kat"), // Afbeelding van de kat
-                ["kaas"] = Content.Load<Texture2D>("kaas"), // Afbeelding van kaas
-                ["nietGenomenKaas"] = Content.Load<Texture2D>("nietGenomenKaas"), // Afbeelding van niet-verzamelde kaas
-                ["leven"] = Content.Load<Texture2D>("leven"), // Afbeelding van een leven (hartje)
-                ["verlorenLeven"] = Content.Load<Texture2D>("verlorenLeven") // Afbeelding van een verloren leven (grijs hartje)
+                ["background"] = Content.Load<Texture2D>("background"), 
+                ["backgroundStart"] = Content.Load<Texture2D>("backgroundStart"), 
+                ["backgroundGameOver"] = Content.Load<Texture2D>("backgroundGameOver"), 
+                ["backgroundWin"] = Content.Load<Texture2D>("backgroundWin"), 
+                ["muis"] = Content.Load<Texture2D>("muis"),
+                ["kat"] = Content.Load<Texture2D>("kat"),
+                ["kaas"] = Content.Load<Texture2D>("kaas"),
+                ["nietGenomenKaas"] = Content.Load<Texture2D>("nietGenomenKaas"), 
+                ["leven"] = Content.Load<Texture2D>("leven"), 
+                ["verlorenLeven"] = Content.Load<Texture2D>("verlorenLeven") 
             };
 
             // Laad het lettertype voor het weergeven van tekst
@@ -70,7 +70,6 @@ namespace CheddarChase {
 
         // Wordt elke frame aangeroepen om de spel-logica bij te werken
         protected override void Update(GameTime gameTime) {
-            // Sluit het spel als de Esc-toets wordt ingedrukt
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
@@ -82,12 +81,9 @@ namespace CheddarChase {
 
         // Wordt elke frame aangeroepen om het spel te tekenen
         protected override void Draw(GameTime gameTime) {
-            // Maak het scherm schoon met een blauwe achtergrondkleur
             GraphicsDevice.Clear(Color.CornflowerBlue);
-
             // Roep de Draw-methode van de huidige State aan
             CurrentState.Draw(gameTime);
-
             base.Draw(gameTime);
         }
     }

@@ -17,7 +17,6 @@ namespace CheddarChase.States {
         }
 
         public override void Update(GameTime gameTime) {
-            // Controleer of de Enter-toets is ingedrukt
             if (Keyboard.GetState().IsKeyDown(Keys.Enter)) {
                 // Keer terug naar de oorspronkelijke PlayingState
                 game.ChangeState(originState);

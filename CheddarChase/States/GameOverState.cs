@@ -11,10 +11,8 @@ namespace CheddarChase.States {
         public GameOverState(Game1 game) : base(game) { }
 
         public override void Update(GameTime gameTime) {
-            // Controleer of de Enter-toets is ingedrukt
-            if (Keyboard.GetState().IsKeyDown(Keys.Enter)) {
-                // Verander de toestand van het spel naar het Startscherm
-                game.ChangeState(new StartScreenState(game));
+            if (Keyboard.GetState().IsKeyDown(Keys.Enter)) {                
+                game.ChangeState(new StartScreenState(game));// Verander de toestand van het spel naar het Startscherm
             }
         }
 

@@ -88,7 +88,7 @@ namespace CheddarChase.States {
             // Beweging van de kat richting de muis
             Vector2 direction = mousePosition - catPosition;
             if (direction.Length() > 1f) {
-                direction.Normalize(); // Normaliseer de richting
+                direction.Normalize(); 
                 catPosition += direction * catMovement; // Beweeg de kat
                 catFlip = direction.X > 0 ? SpriteEffects.None : SpriteEffects.FlipHorizontally; // Draai de kat
             }
@@ -107,7 +107,7 @@ namespace CheddarChase.States {
             else if (!canTakeLife) {
                 cooldownTimer -= gameTime.ElapsedGameTime.TotalSeconds;
                 if (cooldownTimer <= 0)
-                    canTakeLife = true; // Heractiveer botsingen
+                    canTakeLife = true; // Heractiveer collision
             }
 
             // Spawn nieuwe kaas als er minder dan 3 kazen op het scherm zijn
